@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trakit — Track every sale, debt and product</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FBFBF9;
+    --white-dim:#F1F1EC;
+    --black:#0A0C0B;
+    --black-soft:#171A18;
+    --ink:#0A0C0B;
+    --ink-soft:#5B615C;
+    --green:#1D6B45;
+    --green-bright:#3FAE72;
+    --green-pale:#E4EFE8;
+    --line:#DCDCD3;
+    --line-on-black:#2A2F2C;
+  }
+  *{box-sizing:border-box;}
+
+  /* ---------- animations ---------- */
+  @keyframes heroIn{ from{ opacity:0; transform:translateY(16px); } to{ opacity:1; transform:translateY(0); } }
+  .hero .eyebrow-line{ animation:heroIn .6s ease both; }
+  .hero h1{ animation:heroIn .7s ease .08s both; }
+  .hero p.sub{ animation:heroIn .7s ease .16s both; }
+  .hero .hero-actions{ animation:heroIn .7s ease .24s both; }
+  .hero-caption{ animation:heroIn .7s ease .3s both; }
+  .hero-visual{ animation:heroIn .8s ease .38s both; }
+
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.in-view{ opacity:1; transform:translateY(0); }
+  .reveal:nth-child(2){ transition-delay:.08s; }
+  .reveal:nth-child(3){ transition-delay:.16s; }
+  .reveal:nth-child(4){ transition-delay:.24s; }
+  .reveal:nth-child(5){ transition-delay:.32s; }
+  .reveal:nth-child(6){ transition-delay:.4s; }
+  .reveal:nth-child(7){ transition-delay:.48s; }
+  .reveal:nth-child(8){ transition-delay:.56s; }
+  @media (prefers-reduced-motion:reduce){
+    .reveal, .hero .eyebrow-line, .hero h1, .hero p.sub, .hero .hero-actions, .hero-caption, .hero-visual{
+      animation:none !important; transition:none !important; opacity:1 !important; transform:none !important;
+    }
+  }
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--white);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.55;
+    font-size:16px;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-variation-settings:"opsz" 40;
+    margin:0;
+    letter-spacing:0.001em;
+  }
+  .mono{ font-family:'Space Mono', monospace; }
+  a{color:inherit;}
+  img{max-width:100%;}
+
+  .wrap{ max-width:1100px; margin:0 auto; padding:0 28px; }
+  section{ padding:104px 0; }
+  @media (max-width:720px){ section{ padding:64px 0; } .wrap{ padding:0 22px; } }
+
+  .hairline{ border:none; border-top:1px solid var(--line); margin:0; }
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky; top:0; z-index:20;
+    background:rgba(251,251,249,0.88);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 28px; max-width:1100px; margin:0 auto;
+  }
+  .brand{
+    font-family:'Fraunces', serif; font-size:1.35rem; font-weight:600;
+    display:flex; align-items:center; gap:10px; letter-spacing:0.01em;
+    color:var(--ink);
+  }
+  .logo-mark{
+    width:32px; height:32px; border-radius:9px; background:var(--black);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .logo-mark span{
+    color:var(--green-bright); font-family:'Fraunces', serif; font-weight:700; font-size:1.05rem;
+    line-height:1;
+  }
+  .nav-links{ display:flex; gap:34px; font-size:0.9rem; color:var(--ink-soft); }
+  .nav-links a{ text-decoration:none; transition:color .15s ease; }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-cta{
+    background:var(--black); color:var(--white); padding:10px 20px;
+    border-radius:2px; text-decoration:none; font-size:0.85rem; letter-spacing:0.02em;
+    transition:background .15s ease;
+  }
+  .nav-cta:hover{ background:var(--green); }
+  @media (max-width:760px){ .nav-links{ display:none; } }
+
+  /* ---------- hero (centered, light) ---------- */
+  .hero-block{
+    background:var(--white); color:var(--ink);
+  }
+  .hero{
+    display:block; text-align:center;
+    max-width:760px; margin:0 auto;
+    padding:100px 0 20px;
+  }
+  @media (max-width:720px){ .hero{ padding:64px 0 8px; } }
+
+  .eyebrow-line{
+    display:inline-flex; align-items:center; gap:10px; margin-bottom:26px;
+    color:var(--green); font-size:0.8rem; font-family:'Space Mono', monospace;
+  }
+  .eyebrow-line .dot{
+    width:6px; height:6px; border-radius:50%; background:var(--green-bright);
+    box-shadow:0 0 0 4px var(--green-pale);
+  }
+  .hero h1{
+    font-size:3.4rem; line-height:1.14; font-weight:700; letter-spacing:-0.01em;
+    color:var(--ink);
+    font-family:'Fraunces', serif;
+  }
+  .hero h1 .accent{ color:var(--green); display:block; }
+  @media (max-width:560px){ .hero h1{ font-size:2.3rem; } }
+  .hero p.sub{
+    margin:26px auto 0; font-size:1.12rem; color:var(--ink-soft); max-width:48ch; font-weight:400;
+  }
+  .hero-actions{ margin-top:36px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+  .hero-caption{
+    margin-top:18px; font-size:0.82rem; color:var(--ink-soft); font-family:'Space Mono', monospace;
+  }
+  .hero-visual{ display:flex; justify-content:center; margin-top:64px; padding-bottom:88px; }
+  @media (max-width:720px){ .hero-visual{ margin-top:44px; padding-bottom:56px; } }
+
+  .btn{
+    padding:14px 26px; border-radius:4px; text-decoration:none;
+    font-size:0.92rem; display:inline-block; border:1px solid transparent;
+    cursor:pointer; transition:all .15s ease; font-family:'IBM Plex Sans', sans-serif;
+    appearance:none; -webkit-appearance:none; margin:0;
+  }
+  .btn-primary{ background:var(--green); color:var(--white); font-weight:600; }
+  .btn-primary:hover{ background:#175A3A; transform:translateY(-1px); }
+  .btn-ghost-dark{ background:transparent; color:var(--white); border-color:#3A3E3B; }
+  .btn-ghost-dark:hover{ border-color:var(--white); }
+  .btn-ghost{ background:transparent; color:var(--ink); border-color:var(--ink); }
+  .btn-ghost:hover{ background:rgba(10,12,11,0.05); }
+
+  /* ---------- receipt mockup ---------- */
+  .receipt{
+    background:var(--black-soft);
+    border:1px solid var(--line-on-black);
+    box-shadow:0 30px 60px -25px rgba(10,12,11,0.4);
+    padding:32px 30px 38px;
+    width:100%; max-width:420px;
+    font-family:'Space Mono', monospace;
+    font-size:0.83rem;
+    position:relative;
+    color:var(--white);
+  }
+  .receipt::before, .receipt::after{
+    content:"";
+    position:absolute; left:0; right:0; height:11px;
+    background-image:radial-gradient(circle at 8px 5px, var(--black) 5px, transparent 5.5px);
+    background-size:16px 11px; background-repeat:repeat-x;
+  }
+  .receipt::before{ top:-6px; }
+  .receipt::after{ bottom:-6px; transform:rotate(180deg); }
+  .receipt-head{
+    text-align:center; border-bottom:1px dashed var(--line-on-black);
+    padding-bottom:16px; margin-bottom:16px;
+  }
+  .receipt-head .store{ font-family:'Fraunces', serif; font-weight:600; font-size:1.25rem; color:var(--green-bright); }
+  .receipt-head .meta{ color:#7B837D; font-size:0.72rem; margin-top:6px; letter-spacing:0.03em; }
+  .receipt-row{
+    display:flex; justify-content:space-between; gap:12px;
+    padding:8px 0; color:#DADFDB;
+  }
+  .receipt-row .name::before{ content:"› "; color:var(--green-bright); }
+  .receipt-total{
+    border-top:1px dashed var(--line-on-black); margin-top:12px; padding-top:14px;
+    display:flex; justify-content:space-between; font-weight:700; font-size:0.9rem; color:var(--white);
+  }
+  .receipt-foot{
+    text-align:center; margin-top:18px; color:#565D59; font-size:0.68rem; letter-spacing:0.05em;
+  }
+
+  /* ---------- section heads ---------- */
+  .section-head{ max-width:60ch; margin-bottom:56px; }
+  .section-head .kicker{
+    color:var(--green); font-size:0.82rem; margin-bottom:14px; font-family:'Space Mono', monospace;
+    letter-spacing:0.02em;
+  }
+  .register-block .section-head .kicker{ color:var(--green-bright); }
+  .register-block .section-head{ margin-bottom:36px; }
+  .section-head h2{ font-size:2.5rem; font-weight:600; }
+  @media (max-width:560px){ .section-head h2{ font-size:2rem; } }
+
+  /* ---------- features: soft cards with icon squares ---------- */
+  .index-list{
+    display:flex; flex-wrap:wrap;
+    gap:24px;
+  }
+  .index-item{ flex:1 1 calc(50% - 12px); box-sizing:border-box; min-width:280px; }
+  @media (max-width:680px){ .index-item{ flex:1 1 100%; } }
+  .index-item{
+    display:flex; flex-direction:column; gap:18px;
+    padding:32px;
+    background:var(--white-dim);
+    border-radius:16px;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .index-item:hover{ transform:translateY(-2px); box-shadow:0 16px 32px -20px rgba(10,12,11,0.25); }
+  .index-icon{
+    width:46px; height:46px; border-radius:11px; background:var(--green-pale);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .index-icon svg{ width:22px; height:22px; stroke:var(--green); fill:none; stroke-width:1.6; }
+  .index-text h3{ font-size:1.2rem; font-weight:600; }
+  .index-text p{ color:var(--ink-soft); margin:8px 0 0; max-width:38ch; font-size:0.94rem; }
+
+
+  /* ---------- pricing ---------- */
+  .tickets{ display:flex; flex-wrap:wrap; gap:24px; }
+  .ticket{ flex:1 1 calc(33.333% - 16px); box-sizing:border-box; min-width:260px; }
+  .ticket{
+    background:var(--white-dim); padding:40px 32px; border-radius:16px; border:none;
+    display:flex; flex-direction:column; gap:16px; position:relative;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .ticket:hover{ transform:translateY(-3px); box-shadow:0 16px 32px -20px rgba(10,12,11,0.25); }
+  .ticket .tag{
+    font-family:'Space Mono', monospace; font-size:0.7rem; color:var(--green);
+    letter-spacing:0.03em; text-transform:uppercase;
+  }
+  .ticket h3{ font-size:1.5rem; font-weight:600; }
+  .ticket .price{
+    font-family:'Fraunces', serif; font-size:2rem; font-weight:600;
+    margin-top:auto; color:var(--ink);
+  }
+  .ticket .price span{ font-size:0.85rem; color:var(--ink-soft); font-weight:400; font-family:'IBM Plex Sans',sans-serif; }
+  .ticket p.desc{ color:var(--ink-soft); font-size:0.94rem; margin:0; }
+  .ticket .btn{ text-align:center; width:100%; margin-top:2px; }
+  .book-mock .cover{ border:1px solid var(--line); }
+
+  /* ---------- testimonials ---------- */
+  .testimonials{ display:flex; flex-wrap:wrap; gap:24px; }
+  .t-card{
+    flex:1 1 calc(33.333% - 16px); box-sizing:border-box; min-width:260px;
+    background:var(--white-dim); border-radius:16px; padding:32px;
+    display:flex; flex-direction:column; gap:20px;
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .t-card:hover{ transform:translateY(-3px); box-shadow:0 16px 32px -20px rgba(10,12,11,0.25); }
+  .t-quote-mark{ font-family:'Fraunces', serif; font-size:2.6rem; color:var(--green); line-height:1; height:24px; }
+  .t-card p{ font-size:1rem; color:var(--ink); line-height:1.6; margin:0; }
+  .t-person{ display:flex; align-items:center; gap:12px; margin-top:auto; }
+  .t-avatar{
+    width:40px; height:40px; border-radius:50%; background:var(--green-pale);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-family:'Fraunces', serif; font-weight:700; color:var(--green); font-size:0.95rem;
+  }
+  .t-person .t-name{ font-weight:600; font-size:0.92rem; }
+  .t-person .t-role{ font-size:0.8rem; color:var(--ink-soft); }
+
+  /* ---------- product mockups ---------- */
+  .mockup{ display:flex; justify-content:center; align-items:center; height:190px; margin-bottom:4px; }
+
+  .phone-mock{
+    width:120px; height:190px; border-radius:16px; background:var(--black);
+    padding:8px 7px; position:relative;
+  }
+  .phone-mock .notch{ width:32px; height:4px; background:#2A2F2C; border-radius:3px; margin:0 auto 7px; }
+  .phone-screen{ background:var(--black-soft); height:100%; border-radius:9px; padding:10px 9px; display:flex; flex-direction:column; gap:7px; }
+  .phone-screen .p-head{ font-family:'Fraunces', serif; font-weight:600; color:var(--green-bright); font-size:0.9rem; }
+  .phone-screen .p-stat{ display:flex; justify-content:space-between; font-family:'Space Mono',monospace; font-size:0.54rem; color:#DADFDB; }
+  .phone-screen .p-bars{ display:flex; align-items:flex-end; gap:3px; height:30px; margin-top:2px; }
+  .phone-screen .p-bars span{ flex:1; background:var(--green-bright); border-radius:1px; opacity:0.85; display:block; }
+  .phone-screen .p-row{ font-size:0.52rem; color:#9CA39D; font-family:'Space Mono',monospace; }
+
+  .book-mock{ display:flex; }
+  .book-mock .spine{ width:9px; background:var(--green-bright); border-radius:2px 0 0 2px; }
+  .book-mock .cover{
+    width:118px; height:158px; background:var(--white); color:var(--black);
+    border-radius:0 3px 3px 0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:5px; box-shadow:-7px 7px 0 rgba(0,0,0,0.3);
+  }
+  .book-mock .b-title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.2rem; color:var(--green); }
+  .book-mock .b-sub{ font-size:0.62rem; color:var(--ink-soft); font-family:'Space Mono',monospace; letter-spacing:0.03em; }
+  .book-mock .b-year{ font-size:0.56rem; color:var(--ink-soft); font-family:'Space Mono',monospace; margin-top:8px; }
+
+  .sheet-mock{ border:1px solid var(--line); width:88%; box-sizing:border-box; overflow:hidden; margin:0 auto; }
+  .sheet-mock table{ border-collapse:collapse; font-family:'Space Mono',monospace; font-size:0.68rem; width:100%; table-layout:fixed; }
+  .sheet-mock th, .sheet-mock td{ border:1px solid var(--line); padding:8px 10px; text-align:left; box-sizing:border-box; }
+  .sheet-mock th{ background:var(--green-pale); color:var(--green); font-weight:700; }
+  .sheet-mock td:first-child, .sheet-mock th:first-child{ background:var(--white-dim); color:var(--ink-soft); text-align:center; width:24px; }
+  .sheet-mock tr:last-child td{ font-weight:700; }
+
+  /* ---------- register ---------- */
+  .register-block{ background:var(--black); color:var(--white); margin:80px 0; }
+  @media (max-width:720px){ .register-block{ margin:48px 0; } }
+  .register{
+    display:flex; flex-wrap:wrap; gap:56px;
+  }
+  .register > *{ flex:1 1 380px; }
+  .register h2{ color:var(--white); font-size:2.3rem; font-weight:600; }
+  .register .lede{ color:#B9BFBA; margin-top:16px; font-size:1rem; max-width:40ch; font-weight:300; }
+  .register .note{
+    margin-top:28px; padding-left:16px; border-left:2px solid var(--green-bright);
+    font-size:0.85rem; color:#9CA39D; font-family:'Space Mono', monospace;
+  }
+  form{ display:flex; flex-direction:column; gap:26px; }
+  .field label{ display:block; font-size:0.8rem; color:#8B928D; margin-bottom:10px; font-family:'Space Mono', monospace; letter-spacing:0.02em; }
+  .field input, .field select{
+    width:100%; padding:14px 0; border:none; border-bottom:1px solid var(--line-on-black);
+    background:transparent; color:var(--white); font-family:'IBM Plex Sans', sans-serif; font-size:1rem;
+    border-radius:0;
+  }
+  .field select option{ background:var(--black); }
+  .field input::placeholder{ color:#565D59; }
+  .field input:focus, .field select:focus{ outline:none; border-bottom-color:var(--green-bright); }
+  .password-wrap{ position:relative; }
+  .password-wrap input{ padding-right:30px; }
+  .password-toggle{
+    position:absolute; right:0; top:50%; transform:translateY(-6px);
+    background:none; border:none; padding:4px; cursor:pointer;
+    color:#8B928D; display:flex; align-items:center; justify-content:center;
+  }
+  .password-toggle:hover{ color:var(--green-bright); }
+  .password-toggle svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.6; }
+  .password-toggle .eye-off{ display:none; }
+  .password-toggle.is-visible .eye{ display:none; }
+  .password-toggle.is-visible .eye-off{ display:block; }
+  .row2{ display:flex; flex-wrap:wrap; gap:24px; }
+  .row2 .field{ flex:1 1 180px; }
+  .submit-btn{
+    background:var(--green-bright); color:var(--black); border:none; padding:15px;
+    border-radius:2px; font-weight:500; font-size:0.95rem; cursor:pointer; margin-top:10px;
+    transition:background .15s ease;
+  }
+  .submit-btn:hover{ background:#57C687; }
+  .form-foot{ font-size:0.76rem; color:#6B726E; margin-top:2px; }
+
+  /* ---------- login strip ---------- */
+  .login-section{ padding:0 0 56px; }
+  .login-strip{
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+    flex-wrap:wrap; padding:32px 0 0; border-top:1px dashed var(--line-dark, var(--line));
+  }
+  .login-strip p{ margin:0; font-size:0.94rem; color:var(--ink-soft); }
+  .login-strip a{
+    font-size:0.92rem; color:var(--green); text-decoration:none; border-bottom:1px solid var(--green);
+    padding-bottom:2px;
+  }
+  .login-strip a:hover{ color:var(--green-bright); border-color:var(--green-bright); }
+
+  footer{ padding:44px 0 60px; background:var(--white); }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
+  .footer-row .brand{ font-size:1.15rem; }
+  .footer-row .fine{ color:var(--ink-soft); font-size:0.82rem; }
+</style>
+</head>
+<body>
+<noscript><style>.reveal{opacity:1 !important; transform:none !important;} .hero *{animation:none !important; opacity:1 !important; transform:none !important;}</style></noscript>
+
+<header>
+  <div class="nav">
+    <div class="brand"><span class="logo-mark"><span>T</span></span>Trakit</div>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Get Trakit</a>
+      <a href="#register-section">Register</a>
+    </nav>
+    <a href="#register-section" class="nav-cta">Get started</a>
+  </div>
+</header>
+
+<div class="hero-block">
+  <div class="wrap">
+    <div class="hero">
+      <div class="eyebrow-line"><span class="dot"></span> BUILT FOR SHOP OWNERS WHO ARE DONE GUESSING</div>
+      <h1>Run your shop by writing<br><span class="accent">one sale at a time.</span></h1>
+      <p class="sub">Trakit keeps your stock, sales and money owed in one place, so closing time takes five minutes instead of an hour with a calculator.</p>
+      <div class="hero-actions">
+        <a href="#pricing" class="btn btn-primary">Get Started →</a>
+      </div>
+      <div class="hero-caption">₦10,000 one-time · no subscription</div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="receipt">
+        <div class="receipt-head">
+          <div class="store">Trakit Daily Slip</div>
+          <div class="meta">WED 12 SEP · SHOP CLOSING</div>
+        </div>
+        <div class="receipt-row"><span class="name">Sales recorded</span><span>18</span></div>
+        <div class="receipt-row"><span class="name">Products in stock</span><span>142</span></div>
+        <div class="receipt-row"><span class="name">Suppliers logged</span><span>6</span></div>
+        <div class="receipt-row"><span class="name">Open debts</span><span>₦34,500</span></div>
+        <div class="receipt-row"><span class="name">Low-stock alerts</span><span>3</span></div>
+        <div class="receipt-total"><span>Time to close books</span><span>4 min</span></div>
+        <div class="receipt-foot">POWERED BY TRAKIT</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div class="section-head reveal">
+      <div class="kicker">WHAT IT HANDLES</div>
+      <h2>Eight things Trakit does for you</h2>
+    </div>
+
+    <div class="index-list">
+      <div class="index-item reveal">
+        <div class="index-icon"><svg viewBox="0 0 24 24"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div>
+        <div class="index-text"><h3>Record sales</h3><p>Log every sale as it happens — item, price, quantity — instead of trying to remember it by closing time.</p></div>
+      </div>
+      <div class="index-item reveal">
+        <div class="index-icon"><svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
+        <div class="index-text"><h3>Add product</h3><p>Keep your full product list in one place, with prices and quantities ready whenever you restock or sell.</p></div>
+      </div>
+      <div class="index-item reveal">
+        <div class="index-icon"><svg viewBox="0 0 24 24"><rect x="1" y="7" width="13" height="10" rx="1"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6" cy="19" r="1.6"/><circle cx="17" cy="19" r="1.6"/></svg></div>
+        <div class="index-text"><h3>Add supplier</h3><p>Store who you buy from — contact details and what they supply — so reordering is one lookup, not a search through old messages.</p></div>
+      </div>
+      <div class="index-item reveal">
+        <div class="index-icon"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v3H9z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg></div>
+        <div class="index-text"><h3>Purchase list</h3><p>Track what you've bought in for the shop, so cost of goods is never a guess at month end.</p></div>
+      </div>
+      <div class="index-item reveal">
+        <div class="index-icon"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M16 12h3"/></svg></div>
+        <div class="index-text"><h3>Debt tracking</h3><p>See who owes you, how much, and since when — no more chasing customers based on memory alone.</p></div>
+      </div>
+      <div class="index-item reveal">
+        <div class="index-icon"><svg viewBox="0 0 24 24"><rect x="4" y="12" width="3" height="8"/><rect x="10.5" y="7" width="3" height="13"/><rect x="17" y="15" width="3" height="5"/></svg></div>
+        <div class="index-text"><h3>Analytics</h3><p>See which products move, which don't, and how the shop is doing week over week, laid out plainly.</p></div>
+      </div>
+      <div class="index-item reveal">
+        <div class="index-icon"><svg viewBox="0 0 24 24"><path d="M12 2a6 6 0 00-6 6v3.5c0 .7-.3 1.4-.8 1.9L4 15h16l-1.2-1.6c-.5-.5-.8-1.2-.8-1.9V8a6 6 0 00-6-6z"/><path d="M9.5 19a2.5 2.5 0 005 0"/></svg></div>
+        <div class="index-text"><h3>Inventory alerts</h3><p>Get a warning before a product runs out completely, not after a customer's already walked away.</p></div>
+      </div>
+      <div class="index-item reveal">
+        <div class="index-icon"><svg viewBox="0 0 24 24"><path d="M7 2h7l5 5v13a2 2 0 01-2 2H7a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M14 2v5h5"/><path d="M9 13h6M9 17h6"/></svg></div>
+        <div class="index-text"><h3>Create invoice</h3><p>Turn any sale or debt into a filled-out invoice, ready to print or send — built from records already sitting in Trakit.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="section-head reveal">
+      <div class="kicker">PICK YOUR FORMAT</div>
+      <h2>Three ways to run Trakit</h2>
+    </div>
+
+    <div class="tickets">
+      <div class="ticket reveal">
+        <div class="mockup">
+          <div class="phone-mock">
+            <div class="notch"></div>
+            <div class="phone-screen">
+              <div class="p-head">Trakit</div>
+              <div class="p-stat"><span>Today's sales</span><span>₦18,400</span></div>
+              <div class="p-bars"><span style="height:40%"></span><span style="height:75%"></span><span style="height:55%"></span><span style="height:90%"></span><span style="height:60%"></span></div>
+              <div class="p-row">✓ Sale recorded</div>
+              <div class="p-row">⚠ Low stock: Rice</div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">The App</div>
+        <h3>Trakit App</h3>
+        <p class="desc">The full digital tool — record sales, track debt and get stock alerts from your phone, updated in real time.</p>
+        <div class="price">₦10,000 <span>one-time</span></div>
+        <a href="#register-section" class="btn btn-primary">Get the app</a>
+      </div>
+
+      <div class="ticket featured reveal">
+        <div class="mockup">
+          <div class="book-mock">
+            <div class="spine"></div>
+            <div class="cover">
+              <div class="b-title">Brand Name</div>
+              <div class="b-sub">DAILY LEDGER</div>
+              <div class="b-year">POWERED BY TRAKIT</div>
+            </div>
+          </div>
+        </div>
+        <div class="tag">The Book</div>
+        <h3>Physical Ledger Book</h3>
+        <p class="desc">A printed ledger book customized with your own brand name and cover, built around the Trakit system — for shops that keep records on paper by choice.</p>
+        <div class="price">₦10,000 <span>one-time</span></div>
+        <!-- ⚠️ EDIT THE NUMBER BELOW (after wa.me/) — this is the only place it lives -->
+        <a href="https://wa.me/2340000000000?text=Hi%2C%20I%27d%20like%20to%20order%20the%20Trakit%20Ledger%20Book" target="_blank" rel="noopener" class="btn btn-primary">Get the book</a>
+      </div>
+
+      <div class="ticket reveal">
+        <div class="mockup">
+          <div class="sheet-mock">
+            <table>
+              <tr><th></th><th>Date</th><th>Item</th><th>Amt</th></tr>
+              <tr><td>1</td><td>12/09</td><td>Rice</td><td>4,500</td></tr>
+              <tr><td>2</td><td>12/09</td><td>Oil</td><td>2,000</td></tr>
+              <tr><td>3</td><td></td><td>Total</td><td>6,500</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="tag">The Sheet</div>
+        <h3>Excel Template</h3>
+        <p class="desc">A ready-made spreadsheet with the same categories — sales, debt, stock — for anyone who already works in Excel.</p>
+        <div class="price">₦10,000 <span>one-time</span></div>
+        <!-- ⚠️ EDIT THE URL BELOW — this is the only place it lives -->
+        <a href="https://selar.co/your-store/trakit-excel-template" target="_blank" rel="noopener" class="btn btn-primary">Get the template</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="section-head reveal">
+      <div class="kicker">WHAT SHOP OWNERS SAY</div>
+      <h2>Trusted by shops closing books faster</h2>
+    </div>
+
+    <div class="testimonials">
+      <div class="t-card reveal">
+        <div class="t-quote-mark">"</div>
+        <p>Closing time used to take me forever with my notebook and calculator. Now I just open Trakit and I'm done in minutes.</p>
+        <div class="t-person">
+          <div class="t-avatar">N</div>
+          <div>
+            <div class="t-name">Ngozi</div>
+            <div class="t-role">Provision Store, Lagos</div>
+          </div>
+        </div>
+      </div>
+      <div class="t-card reveal">
+        <div class="t-quote-mark">"</div>
+        <p>My customers stopped disputing their balances once I started sending them their debt straight from Trakit.</p>
+        <div class="t-person">
+          <div class="t-avatar">I</div>
+          <div>
+            <div class="t-name">Ibrahim</div>
+            <div class="t-role">Building Materials, Kano</div>
+          </div>
+        </div>
+      </div>
+      <div class="t-card reveal">
+        <div class="t-quote-mark">"</div>
+        <p>I finally know which products are actually making me money and which ones are just sitting there.</p>
+        <div class="t-person">
+          <div class="t-avatar">B</div>
+          <div>
+            <div class="t-name">Blessing</div>
+            <div class="t-role">Cosmetics Retailer, Abuja</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- REGISTER -->
+<div class="register-block">
+  <div class="wrap">
+    <section id="register-section">
+      <div class="section-head reveal">
+        <div class="kicker">GET STARTED</div>
+      </div>
+      <div class="register">
+        <div>
+          <h2>Create Your Trakit Account</h2>
+          <p class="lede">Pay once, right here, and this becomes your login — use the same email and password to sign into the Trakit app.</p>
+          <div class="note">PAY ₦10,000 TO ACTIVATE.<br>YOU'LL LOG INTO THE APP WITH THIS EMAIL &amp; PASSWORD.</div>
+        </div>
+
+        <form id="payment-form" onsubmit="handlePaymentForm(event)">
+          <div class="field">
+            <label for="name">NAME</label>
+            <input type="text" id="name" placeholder="e.g. Ada Obi" required>
+          </div>
+          <div class="field">
+            <label for="business">BUSINESS NAME</label>
+            <input type="text" id="business" placeholder="e.g. Ada's Provisions" required>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="email">EMAIL</label>
+              <input type="email" id="email" placeholder="you@email.com" required>
+            </div>
+            <div class="field">
+              <label for="password">PASSWORD</label>
+              <div class="password-wrap">
+                <input type="password" id="password" placeholder="Create a password" minlength="6" required>
+                <button type="button" class="password-toggle" onclick="togglePassword(this)" aria-label="Show password">
+                  <svg class="eye" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a20.3 20.3 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 7 11 7a20.3 20.3 0 01-2.66 3.77M14.12 14.12a3 3 0 11-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Gain Access</button>
+          <div class="form-foot">Payments are processed securely by Paystack. Trakit never sees your card details.</div>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="login-section">
+    <div class="login-strip">
+      <p>Already paid and have an account?</p>
+      <a href="#">Log in to the app with your email →</a>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="wrap footer-row">
+    <div class="brand"><span class="logo-mark"><span>T</span></span>Trakit</div>
+    <div class="fine">© 2026 Trakit. Every sale, tracked.</div>
+  </div>
+</footer>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+  // ⚠️ Replace these placeholders with your real values:
+  const PAYSTACK_PUBLIC_KEY = "pk_test_REPLACE_WITH_YOUR_PAYSTACK_PUBLIC_KEY";
+  const APP_LOGIN_URL = "https://app.trakit.ng/login"; // where the app itself lives
+
+  // Your own backend endpoint (see verify-and-create-account.js — deploy it as a
+  // serverless function). The browser is NEVER trusted to say "payment succeeded" —
+  // this endpoint re-checks the payment with Paystack directly before any account
+  // is created. No verified payment = no account, no matter what happens client-side.
+  const VERIFY_ENDPOINT = "/api/verify-and-create-account";
+
+  function togglePassword(btn){
+    const input = btn.previousElementSibling;
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    btn.classList.toggle("is-visible", !showing);
+    btn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+  }
+
+  function handlePaymentForm(event){
+    event.preventDefault();
+    const submitBtn = event.target.querySelector(".submit-btn");
+    const name = document.getElementById("name").value;
+    const business = document.getElementById("business").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_PUBLIC_KEY,
+      email: email,
+      amount: 1000000, // ₦10,000 in kobo
+      currency: "NGN",
+      ref: "trakit_" + Math.floor(Math.random() * 1000000000 + 1),
+      metadata: { custom_fields: [{ display_name: "Name", variable_name: "name", value: name }, { display_name: "Business", variable_name: "business", value: business }] },
+      callback: function(response){
+        verifyAndEnter(response.reference, { name: name, business: business, email: email, password: password }, submitBtn);
+      },
+      onClose: function(){}
+    });
+    handler.openIframe();
+  }
+
+  // Paystack's client-side "callback" only tells us the popup finished — it is
+  // NOT proof of payment. We hand the reference to our backend, which asks
+  // Paystack's server-to-server verify endpoint for the real status (using a
+  // secret key that never touches the browser) and only creates the account —
+  // and only then do we redirect — if that comes back successful.
+  async function verifyAndEnter(reference, account, submitBtn){
+    if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = "Verifying payment…"; }
+    try{
+      const res = await fetch(VERIFY_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reference: reference, account: account })
+      });
+      const data = await res.json();
+      if(!res.ok || !data.verified){
+        alert("We couldn't verify this payment, so no account was created. If you were charged, contact support with reference: " + reference);
+        if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = "Gain Access"; }
+        return;
+      }
+      window.location.href = APP_LOGIN_URL + "?email=" + encodeURIComponent(account.email);
+    } catch(err){
+      alert("We couldn't reach our server to confirm payment. Nothing was created. Please try again, or contact support with reference: " + reference);
+      if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = "Gain Access"; }
+    }
+  }
+</script>
+
+<script>
+  (function(){
+    var items = document.querySelectorAll('.reveal');
+    function showAll(){ items.forEach(function(el){ el.classList.add('in-view'); }); }
+    try{
+      if(!('IntersectionObserver' in window)){ showAll(); return; }
+      var revealObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add('in-view');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      items.forEach(function(el){ revealObserver.observe(el); });
+    } catch(e){
+      showAll();
+    }
+  })();
+</script>
+</body>
+</html>
